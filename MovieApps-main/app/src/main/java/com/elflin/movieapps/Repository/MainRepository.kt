@@ -24,6 +24,28 @@ class MainRepository @Inject constructor(
 //        return api.addExpense(token, addExpenseRequest)
 //    }
 
+    suspend fun getSavingsBudgetInsight(
+        token: String,
+    ) = api.getSavingsBudgetInsight(token)
+    suspend fun getNeedsBudgetInsight(
+        token: String,
+    ) = api.getNeedsBudgetInsight(token)
+    suspend fun getWantsBudgetInsight(
+        token: String,
+    ) = api.getWantsBudgetInsight(token)
+    suspend fun deleteWishlist(
+        token: String,
+        id:Int
+    ) = api.deleteWishlist(token,id)
+    suspend fun getWishlist(
+        token: String,
+    ) = api.getWishlist(token)
+    suspend fun addWishlist(
+        token: String,
+        nama_barang: String,
+        harga_barang: Int,
+    ) = api.addWishlist(token, nama_barang,harga_barang)
+
     suspend fun AddExpense(
         token: String,
         expense_name: String,
@@ -35,6 +57,29 @@ class MainRepository @Inject constructor(
         token: String,
         expense_month: String
     ) = api.displayExpense(token, expense_month)
+
+    suspend fun setBudgetSekaligus(
+        token: String,
+        budget_needs: Int,
+        budget_wants: Int,
+        budget_savings: Int
+    ) = api.setBudgetSekaligus(token,budget_needs,budget_savings,budget_wants)
+
+    suspend fun getTotalExpense(
+        token: String,
+    ) = api.getTotalExpenses(token)
+
+    suspend fun getTotalExpensePercentage(
+        token: String,
+    ) = api.getTotalExpensesPercentage(token)
+
+    suspend fun getTotalExpensePercentage2(
+        token: String,
+    ) = api.getTotalExpensesPercentage2(token)
+
+    suspend fun getTotalExpensePercentage3(
+        token: String,
+    ) = api.getTotalExpensesPercentage3(token)
 
     suspend fun displayExpenseWithoutMonth(
         token: String,

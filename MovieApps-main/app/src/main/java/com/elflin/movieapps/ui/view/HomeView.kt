@@ -69,12 +69,12 @@ fun HomeView(
     var activeDeleteId by remember { mutableStateOf<Int?>(null) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
-//    LaunchedEffect() {
-//        loadExpenses()
-////        if (budgetChecker == 0) {
-////            navController.navigate("setBudget")
-////        }
-//    }
+    LaunchedEffect(Unit) {
+
+        mainViewModel.loadExpenses()
+        mainViewModel.setToken()
+    }
+
 
     // Function to handle delete confirmation
     val confirmDelete = { id: Int ->
@@ -153,7 +153,7 @@ fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
                     .weight(1f)
             ) {
                 Text(
-                    text = "Hi , $userName ! ",
+                    text = "Hi ! ",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 4.dp) // Reduced bottom padding
@@ -463,7 +463,7 @@ fun NavBar(navController: NavController) {
 
             Image(
 
-                painter = painterResource(id = R.drawable.baseline_insert_chart_outlined_24),
+                painter = painterResource(id = R.drawable.chart_svgrepo_com),
                 contentDescription = "",
                 modifier = Modifier
                     .size(25.dp)
@@ -488,7 +488,7 @@ fun NavBar(navController: NavController) {
 
             Image(
 
-                painter = painterResource(id = R.drawable.baseline_lock_24),
+                painter = painterResource(id = R.drawable.baseline_lock_23),
                 contentDescription = "",
                 modifier = Modifier
                     .size(25.dp)
@@ -515,7 +515,7 @@ fun NavBar(navController: NavController) {
 
             Image(
 
-                painter = painterResource(id = R.drawable.baseline_person_23),
+                painter = painterResource(id = R.drawable.baseline_person_24),
                 contentDescription = "",
                 modifier = Modifier
                     .size(25.dp)
@@ -537,6 +537,8 @@ fun NavBar(navController: NavController) {
         }
     }
 }
+
+
 
 @Composable
 fun ClickableRow(navController: NavController) {

@@ -1,5 +1,6 @@
 package com.elflin.movieapps.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,11 +20,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,36 +49,124 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.elflin.movieapps.R
+import com.elflin.movieapps.model.Expense
+import com.elflin.movieapps.model.Wishlist
+import com.elflin.movieapps.model.WishlistList
 import com.elflin.movieapps.ui.theme.MovieAppsTheme
-
-
+import com.elflin.movieapps.viewmodel.MainViewModel
 
 
 @Composable
-fun LockView(navController: NavController) {
+fun LockView(
+    navController: NavController,
+    mainViewModel: MainViewModel
+) {
+    // Observing LiveData from MainViewModel
+    val wishlistList by mainViewModel.wishlistList.observeAsState(initial = emptyList())
+
+    var activeDeleteId by remember { mutableStateOf<Int?>(null) }
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+
+    val confirmDelete = { id: Int ->
+        activeDeleteId = id
+        showDeleteConfirmationDialog = true
+        Log.d("LockView", "Confirm delete for ID: $id")
+    }
+
+
+    LaunchedEffect(Unit) {
+        mainViewModel.loadWishlist()
+        mainViewModel.getSavingsBudgetInsight()
+        mainViewModel.getWantsBudgetInsight()
+        mainViewModel.getSavingsBudgetInsight()
+    }
+
+    ConfirmDeleteDialog(
+        showDialog = showDeleteConfirmationDialog,
+        onConfirm = {
+            activeDeleteId?.let { mainViewModel.deleteWishlist(it) }
+            showDeleteConfirmationDialog = false
+        },
+        onDismiss = {
+            showDeleteConfirmationDialog = false
+        }
+    )
+
+
     Column {
         TopBar3(navController)
 
+        // Using Box as a container for the list
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            LockBarLock()
+            LazyColumn {
+                items(wishlistList) { wishlist ->
+                    TransactionCard(
+                        wishlist = wishlist,
+                        onDeleteConfirm = { id ->
+
+                            confirmDelete(id)
+                        },
+                        onWishlistSelect = { name ->
+                            // Implement expense selection logic here
+                        }
+                    )
+                }
+            }
         }
 
-
-      NavBar2(navController)
-//        NavBar2(
-//           modifier = Modifier
-//                .fillMaxWidth()
-//                .height(70.dp)
-//                .padding(bottom = 16.dp),
-//            navController = navController
-//        )
+        NavBar(navController)
     }
 }
 
+
+@Composable
+fun ConfirmDeleteDialog2(
+    showDialog: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("Confirm Delete") },
+            text = { Text("Are you sure you want to delete this expense?") },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
+fun DeleteConfirmationDialog2(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Confirm Deletion") },
+        text = { Text("Are you sure you want to delete this item?") },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
 
 
 @Composable
@@ -88,6 +187,7 @@ fun TopBar3(navController: NavController) {
                 .size(25.dp)
                 .aspectRatio(1f)
                 .fillMaxHeight()
+                .clickable {  navController.navigateUp() }
         )
 
         Spacer(modifier = Modifier.width(5.dp))
@@ -112,7 +212,7 @@ fun TopBar3(navController: NavController) {
                 .aspectRatio(1f)
                 .fillMaxHeight()
                 .clickable {
-                    navController.navigate("lockadd_screen")
+                    navController.navigate("addLock")
                 }
         )
 
@@ -150,99 +250,111 @@ fun LockBar() {
 }
 
 @Composable
-fun LockBarLock() {
-    Box(
-        contentAlignment = Alignment.Center,
+fun TransactionCard(
+    wishlist: Wishlist,
+    onDeleteConfirm: (Int) -> Unit,
+    onWishlistSelect: (String) -> Unit
+) {
+    var isDeleteVisible by remember { mutableStateOf(false) }
+
+    Card(
+        colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
         modifier = Modifier
             .fillMaxWidth()
-            .height(500.dp)
+            .padding(top = 23.dp, start = 17.dp, end = 17.dp)
+            .border(0.2.dp, Color.Black, shape = RoundedCornerShape(8.dp))
     ) {
-        LazyColumn(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .clickable {
+                    isDeleteVisible = !isDeleteVisible
+                }
+                .padding(16.dp) // Add padding to the whole content
         ) {
-            item {
+            Image(
+                painter = painterResource(id = R.drawable.needs),
+                contentDescription = "Image Compose",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(shape = RoundedCornerShape(100.dp))
+            )
 
-                Text(
-                    text = "Needs",
-                    fontSize = 20.sp,
-                    color = Color(0xFF646464),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .padding(
+            Spacer(modifier = Modifier.width(16.dp))
 
-                            start = 15.dp
-                        )
-                )
-
-                Card(
-                    colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 23.dp, start = 17.dp, end = 17.dp)
-                        .border(0.5.dp, Color.Black, shape = RoundedCornerShape(8.dp))
+                        .padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp) // Add padding to the whole content
-                    ) {
+                    Text(
+                        text = "Name: ${wishlist.name}",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    //need want savings
+                    //insight perlu category id
+                    //monthly,
+
+
+                    Text(
+                        text = "${wishlist.price}",
+                        fontSize = 15.sp
+                    )
+
+
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .wrapContentHeight(Alignment.Top),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "${wishlist.status}",
+                        fontSize = 15.sp,
+                    )
+
+
+                    if (isDeleteVisible) {
                         Image(
-                            painter = painterResource(id = R.drawable.needs),
-                            contentDescription = "Image Compose",
-                            contentScale = ContentScale.Crop,
+                            painter = painterResource(id = R.drawable.baseline_restore_from_trash_24),
+                            contentDescription = "Delete",
                             modifier = Modifier
-                                .size(50.dp)
-                                .clip(shape = RoundedCornerShape(100.dp))
+                                .size(25.dp)
+                                .clickable {
+                                    onDeleteConfirm(wishlist.id)
+                                }
                         )
 
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp) // Add bottom padding to the first row
-                                    .height(IntrinsicSize.Min)
-                                    .wrapContentHeight(Alignment.Top),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(
-                                    text = "Dior carlin",
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Text(
-                                    text = "Rp. 50.000",
-                                    fontSize = 15.sp
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(IntrinsicSize.Min)
-                                    .wrapContentHeight(Alignment.Top),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(
-                                    text = "Due : 17 November 2023 ",
-                                    fontSize = 12.sp,
-                                )
-                            }
-                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.edit),
+                            contentDescription = "Edit",
+                            modifier = Modifier
+                                .size(25.dp)
+                                .clickable {
+//                                    onExpenseSelect(expense.name)
+                                }
+                        )
                     }
+
+
                 }
             }
         }
     }
 }
+
 @Composable
 fun NavBar2(navController: NavController) {
 
@@ -363,12 +475,12 @@ fun NavBar2(navController: NavController) {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LockPreview1() {
-    val navController = rememberNavController()
-    MovieAppsTheme {
-        LockView(navController = navController)
-    }
-}
-
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun LockPreview1() {
+//    val navController = rememberNavController()
+//    MovieAppsTheme {
+//        LockView(navController = navController)
+//    }
+//}
+//

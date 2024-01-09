@@ -41,9 +41,9 @@ fun ProfileView(navController: NavController, authViewModel: AuthViewModel, cont
         TopBar5(navController = navController)
         ProfileBar(authViewModel, context)
 
-        Spacer(modifier = Modifier.height(320.dp))
+        Spacer(modifier = Modifier.height(290.dp))
 
-        NavBar3(navController)
+        NavBar(navController)
     }
 }
 

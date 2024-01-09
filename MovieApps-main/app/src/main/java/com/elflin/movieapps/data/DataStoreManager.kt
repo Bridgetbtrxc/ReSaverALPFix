@@ -15,6 +15,7 @@ class DataStoreManager  (context: Context) {
 
     companion object {
         val TOKEN_KEY = stringPreferencesKey("token_key")
+
     }
 
     suspend fun clearToken() {

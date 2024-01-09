@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.elflin.movieapps.data.DataStoreManager
+import com.elflin.movieapps.ui.view.AddLockView
 
 import com.elflin.movieapps.ui.view.GetStartedView
 import com.elflin.movieapps.ui.view.LoginView
@@ -82,15 +83,23 @@ fun MovieAppsRoute(authViewModel: AuthViewModel, dataStore: DataStoreManager, li
       HomeView(navController, authViewModel, mainViewModel)
     }
 
+    composable("addLock") {
+      AddLockView(authViewModel,
+        mainViewModel,
+        lifecycleOwner,
+        navController,
+        dataStore)
+    }
+
     composable("Add") {
       HomeView(navController, authViewModel, mainViewModel)
     }
 
     composable("insight") {
-      InsightView(navController)  // Replace with your InsightView Composable
+      InsightView(navController, mainViewModel)  // Replace with your InsightView Composable
     }
     composable("lockview") {
-      LockView(navController)  // Replace with your LockView Composable
+      LockView(navController, mainViewModel)  // Replace with your LockView Composable
     }
     composable("profileview") {
       ProfileView(navController,authViewModel, context)  // Replace with your ProfileView Composable

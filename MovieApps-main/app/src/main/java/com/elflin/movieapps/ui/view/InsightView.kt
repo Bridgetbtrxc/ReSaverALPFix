@@ -34,6 +34,7 @@ import com.elflin.movieapps.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.MoreVert
@@ -43,474 +44,646 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavController
+import com.elflin.movieapps.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InsightView(navController: NavController) {
+fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Scaffold(
+        bottomBar = { NavBar(navController) } // Use NavBar as BottomAppBar
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(24.dp)
         ) {
-
-            Box(
-                modifier = Modifier
-                    .background(color = Color(0xfff3f4f6), shape = RoundedCornerShape(50.dp))
-            ) {
-                IconButton(
-                    onClick = { /*TODO*/ },
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowLeft,
-                        contentDescription = null,
-                        tint = Color.Black,
-                    )
-                }
-
-            }
-
-            Text(
-                text = "Insights",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Box(
-                modifier = Modifier
-                    .background(color = Color(0xfff3f4f6), shape = RoundedCornerShape(50.dp))
-            ) {
-                IconButton(
-                    onClick = { /*TODO*/ },
-
-                    ) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        tint = Color.Black,
-                        modifier = Modifier.graphicsLayer(rotationZ = 90f)
-                    )
-                }
-
-            }
 
         }
+        val savingsRemainingMessage by mainViewModel.savingsRemainingMessage.observeAsState("")
+        val savingsPercentageMessage by mainViewModel.savingsPercentageMessage.observeAsState("")
 
-        Spacer(modifier = Modifier.padding(vertical = 12.dp))
+        val needsRemainingMessage by mainViewModel.needsRemainingMessage.observeAsState("")
+        val needsPercentageMessage by mainViewModel.needsPercentageMessage.observeAsState("")
 
-        Card(
-            onClick = { },
+        val wantsRemainingMessage by mainViewModel.wantsRemainingMessage.observeAsState("")
+        val wantsPercentageMessage by mainViewModel.wantsPercentageMessage.observeAsState("")
+
+        val totalSpendingState = mainViewModel.totalSpending.observeAsState("")
+        val needPercentage = mainViewModel.NeedsPercentage.observeAsState("")
+        val needSpending = mainViewModel.NeedsSpending.observeAsState("")
+
+        val wantPercentage = mainViewModel.WantsPercentage.observeAsState("")
+        val wantSpending = mainViewModel.WantsSpending.observeAsState("")
+
+        val savingPercentage = mainViewModel.SavingsPercentage.observeAsState("")
+        val savingSpending = mainViewModel.SavingsSpending.observeAsState("")
+
+        LaunchedEffect(Unit) {
+            mainViewModel.getTotalExpense()
+            mainViewModel.needsPercentage()
+            mainViewModel.wantsPercentage()
+            mainViewModel.savingsPercentage()
+            mainViewModel.getSavingsBudgetInsight()
+            mainViewModel.getWantsBudgetInsight()
+            mainViewModel.getSavingsBudgetInsight()
+        }
+
+        Column(
+
             modifier = Modifier
-                .fillMaxWidth()
-                .height(110.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF5A45FE)
-            ),
+                .fillMaxSize()
+                .padding(24.dp)
         ) {
+
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Column(
+                Box(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp),
+                        .background(color = Color(0xfff3f4f6), shape = RoundedCornerShape(50.dp))
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = Color.Black,
+                        )
+                    }
+
+                }
+
+                Text(
+                    text = "Insights",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
+                Box(
+                    modifier = Modifier
+                        .background(color = Color(0xfff3f4f6), shape = RoundedCornerShape(50.dp))
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+
+                        ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier.graphicsLayer(rotationZ = 90f)
+                        )
+                    }
+
+                }
+
+            }
+
+
+
+            Card(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF5A45FE)
+                ),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Text(
+                            text = "Total Spending",
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                        Text(
+                            text = "Total : Rp " + totalSpendingState.value,
+                            color = Color.White,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+
+                        Text(
+                            text = "Total Budget Remaining :",
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                        Text(
+                            text = "Needs",
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Text(
+                            text = needsRemainingMessage,
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Text(
+                            text = needsPercentageMessage,
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                        Text(
+                            text = "Wants",
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Text(
+                            text = wantsRemainingMessage,
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Text(
+                            text = wantsPercentageMessage,
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                        Text(
+                            text = "Savings",
+                            color = Color.LightGray,
+                            fontSize = 12.sp
+                        )
+
+                    }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.paper_fold_text_line),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 30.dp)
+                            .size(20.dp)
+
+
+                    )
+                }
+
+            }
+
+            Spacer(modifier = Modifier.padding(bottom = 16.dp))
+
+            Text(
+                text = "Spending",
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
+
+            Spacer(modifier = Modifier.padding(bottom = 16.dp))
+
+            Card(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+                ),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(52.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                    ) {
+
+                        Text(
+                            text = "Needs",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(bottom = 6.dp))
+
+                        Text(
+                            text = "Total : Rp" + needSpending.value,
+                            fontSize = 14.sp,
+                            color = Color.LightGray
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.padding(end = 80.dp))
+
+
+                    Text(
+                        text = needPercentage.value + "%",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+
+            }
+
+            Spacer(modifier = Modifier.padding(bottom = 16.dp))
+
+
+            Card(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+                ),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.icon__1_),
+                        contentDescription = null,
+                        modifier = Modifier.size(52.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                    ) {
+
+                        Text(
+                            text = "Wants",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(bottom = 6.dp))
+
+                        Text(
+                            text = "Total : Rp " + wantSpending.value,
+                            fontSize = 14.sp,
+                            color = Color.LightGray
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.padding(end = 80.dp))
+
+
+                    Text(
+                        text = wantPercentage.value + "%",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+
+            }
+
+            Spacer(modifier = Modifier.padding(bottom = 16.dp))
+
+            Card(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+                ),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.savings_svgrepo_com),
+                        contentDescription = null,
+                        modifier = Modifier.size(52.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                    ) {
+
+                        Text(
+                            text = "Savings",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+
+                        Spacer(modifier = Modifier.padding(bottom = 6.dp))
+
+                        Text(
+                            text = "Total : Rp " + savingSpending.value,
+                            fontSize = 14.sp,
+                            color = Color.LightGray
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.padding(end = 80.dp))
+
+                    Text(
+                        text = savingPercentage.value + "%",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+
+            }
+
+
+//        NavBar(navController)
+
+//        Row(
+//
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceEvenly,
+//
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(70.dp)
+//
+//        ) {
+//
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ){
+//
+//                Image(
+//
+//                    painter = painterResource(id = R.drawable.baseline_home_23),
+//                    contentDescription = "",
+//                    modifier = Modifier
+//                        .clickable { navController.navigate("home") }
+//                        .size(25.dp)
+//                        .aspectRatio(1f)
+//                        .fillMaxHeight()
+//                )
+//                Text(
+//                    text = "Home",
+//                    fontSize = 11.sp,
+//                    modifier = Modifier
+//                        .padding(horizontal = 6.dp, vertical = 5.dp)
+//                )
+//            }
+//
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ){
+//
+//                Image(
+//
+//                    painter = painterResource(id = R.drawable.baseline_insert_chart_outlined_24),
+//                    contentDescription = "",
+//                    modifier = Modifier
+//                        .size(25.dp)
+//                        .clickable { navController.navigate("insight") }
+//                        .aspectRatio(1f)
+//                        .fillMaxHeight()
+//                )
+//                Text(
+//                    text = "Insights",
+//                    color = Color.Gray,
+//                    fontSize = 11.sp,
+//                    modifier = Modifier
+//                        .padding(horizontal = 6.dp, vertical = 5.dp)
+//                )
+//            }
+//
+//
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ){
+//
+//                Image(
+//
+//                    painter = painterResource(id = R.drawable.baseline_lock_24),
+//                    contentDescription = "",
+//                    modifier = Modifier
+//                        .size(25.dp)
+//                        .aspectRatio(1f)
+//                        .clickable { navController.navigate("lockview") }
+//                        .fillMaxHeight()
+//                        .clickable {
+//                            navController.navigate("lockview")
+//                        }
+//                )
+//                Text(
+//                    text = "Lock",
+//                    color = Color.Gray,
+//                    fontSize = 11.sp,
+//                    modifier = Modifier
+//                        .padding(horizontal = 6.dp, vertical = 5.dp)
+//                )
+//            }
+//
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ){
+//
+//                Image(
+//
+//                    painter = painterResource(id = R.drawable.baseline_person_23),
+//                    contentDescription = "",
+//                    modifier = Modifier
+//                        .size(25.dp)
+//                        .aspectRatio(1f)
+//                        .fillMaxHeight()
+//                        .clickable { navController.navigate("profileview") }
+//                        .clickable {
+//                            navController.navigate("ProfileView")
+//                        }
+//                )
+//
+//                Text(
+//                    text = "Profile",
+//                    color = Color.Gray,
+//                    fontSize = 11.sp,
+//                    modifier = Modifier
+//                        .padding(horizontal = 6.dp, vertical = 5.dp)
+//                )
+//            }
+//        }
+        }
+
+
+        @Composable
+        fun NavBar2(navController: NavController) {
+
+            Row(
+
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+
+            ) {
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
 
-                    Text(
-                        text = "Total Spending",
-                        color = Color.LightGray,
-                        fontSize = 12.sp
+                    Image(
+
+                        painter = painterResource(id = R.drawable.baseline_home_24),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .clickable { navController.navigate("home") }
+                            .size(25.dp)
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
                     )
-
-                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
                     Text(
-                        text = "$3,765.00",
-                        color = Color.White,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "Home",
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 5.dp)
                     )
-
-
                 }
-
-                Image(
-                    painter = painterResource(id = R.drawable.paper_fold_text_line),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .size(42.dp)
-
-
-                )
-            }
-
-        }
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Text(
-            text = "Categories",
-            fontWeight = FontWeight.Bold,
-            fontSize = 22.sp
-        )
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Card(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
-            border = BorderStroke(1.dp, Color.LightGray)
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(52.dp)
-                )
 
                 Column(
-                    modifier = Modifier.padding(start = 20.dp, end = 30.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
 
-                    Text(
-                        text = "Needs",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                    Image(
+
+                        painter = painterResource(id = R.drawable.chart_svgrepo_com),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(25.dp)
+                            .clickable { navController.navigate("insight") }
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
                     )
-
-                    Spacer(modifier = Modifier.padding(bottom = 6.dp))
-
                     Text(
-                        text = "Rp 1,345,000 of Rp 1,500,000",
-                        fontSize = 14.sp,
-                        color = Color.LightGray
+                        text = "Insights",
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 5.dp)
                     )
-
                 }
 
-
-                Text(
-                    text = "67%",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                )
-            }
-
-        }
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Card(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
-            border = BorderStroke(1.dp, Color.LightGray)
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.icon__1_),
-                    contentDescription = null,
-                    modifier = Modifier.size(52.dp)
-                )
 
                 Column(
-                    modifier = Modifier.padding(start = 20.dp, end = 30.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
 
-                    Text(
-                        text = "Wants",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                    Image(
+
+                        painter = painterResource(id = R.drawable.baseline_lock_24),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(25.dp)
+                            .aspectRatio(1f)
+                            .clickable { navController.navigate("lockview") }
+                            .fillMaxHeight()
+                            .clickable {
+                                navController.navigate("lockview")
+                            }
                     )
-
-                    Spacer(modifier = Modifier.padding(bottom = 6.dp))
-
                     Text(
-                        text = "Rp 500,000 of Rp 1,500,000",
-                        fontSize = 14.sp,
-                        color = Color.LightGray
+                        text = "Lock",
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 5.dp)
                     )
-
                 }
-
-
-                Text(
-                    text = "33%",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                )
-            }
-
-        }
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Card(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
-            border = BorderStroke(1.dp, Color.LightGray)
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.icon__2_),
-                    contentDescription = null,
-                    modifier = Modifier.size(52.dp)
-                )
 
                 Column(
-                    modifier = Modifier.padding(start = 20.dp, end = 30.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
 
-                    Text(
-                        text = "Savings",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                    Image(
+
+                        painter = painterResource(id = R.drawable.baseline_person_23),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(25.dp)
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
+                            .clickable { navController.navigate("profileview") }
+                            .clickable {
+                                navController.navigate("ProfileView")
+                            }
                     )
 
-                    Spacer(modifier = Modifier.padding(bottom = 6.dp))
-
                     Text(
-                        text = "Rp 500,000 of Rp 550,000",
-                        fontSize = 14.sp,
-                        color = Color.LightGray
-                    )
-
-                }
-
-                Text(
-                    text = "90%",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                )
-            }
-
-        }
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Text(
-            text = "My Locks",
-            fontWeight = FontWeight.Bold,
-            fontSize = 22.sp
-        )
-
-        Spacer(modifier = Modifier.padding(bottom = 16.dp))
-
-        Card(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(92.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
-            border = BorderStroke(1.dp, Color.LightGray)
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
-            ) {
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-
-                    Text(
-                        text = "You Saved Rp 500,000",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.padding(bottom = 4.dp))
-
-                    Text(
-                        text = "3 out of 5 attempts at impulsive buying were sucessfully prevented",
-                        fontSize = 12.sp,
-                        color = Color.LightGray
+                        text = "Profile",
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 5.dp)
                     )
                 }
-
-                Image(
-                    painter = painterResource(R.drawable.lock_line),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.15f)
-                        .size(24.dp)
-                )
-
-            }
-
-        }
-
-        Spacer(modifier = Modifier.padding(bottom = 18.dp))
-
-        Row(
-
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-
-        ) {
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-
-                Image(
-
-                    painter = painterResource(id = R.drawable.baseline_home_23),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .clickable { navController.navigate("home") }
-                        .size(25.dp)
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                )
-                Text(
-                    text = "Home",
-                    fontSize = 11.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp, vertical = 5.dp)
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-
-                Image(
-
-                    painter = painterResource(id = R.drawable.baseline_insert_chart_outlined_24),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clickable { navController.navigate("insight") }
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                )
-                Text(
-                    text = "Insights",
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp, vertical = 5.dp)
-                )
-            }
-
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-
-                Image(
-
-                    painter = painterResource(id = R.drawable.baseline_lock_24),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(25.dp)
-                        .aspectRatio(1f)
-                        .clickable { navController.navigate("lockview") }
-                        .fillMaxHeight()
-                        .clickable {
-                            navController.navigate("lockview")
-                        }
-                )
-                Text(
-                    text = "Lock",
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp, vertical = 5.dp)
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ){
-
-                Image(
-
-                    painter = painterResource(id = R.drawable.baseline_person_23),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(25.dp)
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                        .clickable { navController.navigate("profileview") }
-                        .clickable {
-                            navController.navigate("ProfileView")
-                        }
-                )
-
-                Text(
-                    text = "Profile",
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp, vertical = 5.dp)
-                )
             }
         }
-}}
+
+    }}
 
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable

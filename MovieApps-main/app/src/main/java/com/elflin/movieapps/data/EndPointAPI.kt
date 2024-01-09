@@ -23,6 +23,23 @@ interface EndPointAPI {
 
 
 
+    @DELETE("deleteWishlist")
+    suspend fun deleteWishlist(
+        @Header("Authorization") token: String,
+        @Query("id") wishlist_id:Int
+    ): Response<JsonObject>
+    @GET("getWishlist")
+    suspend fun getWishlist(
+        @Header("Authorization") token: String,
+    ): Response<JsonObject>
+    @FormUrlEncoded
+    @POST("addWishlist")
+    suspend fun addWishlist(
+        @Header("Authorization") token: String,
+        @Field("name") user_username:String,
+        @Field("price") user_email:Int
+    ): Response<JsonObject>
+
     // Login and receive a token
     @FormUrlEncoded
     @POST("createuser")
@@ -32,9 +49,56 @@ interface EndPointAPI {
         @Field("password") user_password:String
     ): Response<JsonObject>
 
+    @FormUrlEncoded
+    @POST("setBudgetSekaligus")
+    suspend fun setBudgetSekaligus(
+        @Header("Authorization") token: String,
+        @Field("budget_wants") user_username: Int,
+        @Field("budget_needs") user_email: Int,
+        @Field("budget_savings") user_password: Int
+    ): Response<JsonObject>
 
 
-//    @FormUrlEncoded
+
+    @GET("getSavingsBudgetInsight")
+    suspend fun getSavingsBudgetInsight(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+    @GET("getNeedsBudgetInsight")
+    suspend fun getNeedsBudgetInsight(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+    @GET("getWantsBudgetInsight")
+    suspend fun getWantsBudgetInsight(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+    @GET("getTotalExpenses")
+    suspend fun getTotalExpenses(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+    @GET("getTotalExpensesPercentage1")
+    suspend fun getTotalExpensesPercentage(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+    @GET("getTotalExpensesPercentage2")
+    suspend fun getTotalExpensesPercentage2(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+    @GET("getTotalExpensesPercentage3")
+    suspend fun getTotalExpensesPercentage3(
+        @Header("Authorization") token: String
+    ): Response<JsonObject>
+
+
+
+
+
+    //    @FormUrlEncoded
 //    @POST("addExpense")
 //    suspend fun addExpense(
 //

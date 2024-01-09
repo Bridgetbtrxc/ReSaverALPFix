@@ -63,7 +63,7 @@ import java.util.prefs.Preferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SetBudgetView(
+fun AddLockView(
     authViewModel: AuthViewModel,
     mainViewModel: MainViewModel,
     lifecycleOwner: LifecycleOwner,
@@ -80,15 +80,13 @@ fun SetBudgetView(
     val token = remember { mutableStateOf("") }
     val isLoggedIn by authViewModel.isLoggedIn.observeAsState()
 
-    var budgetwants by rememberSaveable {
+    var namaLock by rememberSaveable {
         mutableStateOf("")
     }
-    var budgetneeds by rememberSaveable {
+    var hargaLock by rememberSaveable {
         mutableStateOf("")
     }
-    var budgetsavings by rememberSaveable {
-        mutableStateOf("")
-    }
+
     var passwordVisibility by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = isLoggedIn) {
@@ -113,7 +111,7 @@ fun SetBudgetView(
         Spacer(modifier = Modifier.padding(bottom = 28.dp))
 
         Text(
-            text = "Modify your budget  !",
+            text = "Add your lock !",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
@@ -121,7 +119,7 @@ fun SetBudgetView(
         Spacer(modifier = Modifier.padding(bottom = 14.dp))
 
         Text(
-            text = "",
+            text = "Tackle impulsive buying habit",
             fontSize = 18.sp,
             color = Color.Gray
         )
@@ -129,7 +127,7 @@ fun SetBudgetView(
         Spacer(modifier = Modifier.padding(bottom = 24.dp))
 
         Text(
-            text = "Budget Needs",
+            text = "Nama Barang ",
             fontSize = 16.sp,
             color = Color.Gray,
         )
@@ -137,8 +135,8 @@ fun SetBudgetView(
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
 
         OutlinedTextField(
-            value = budgetneeds,
-            onValueChange = { budgetneeds = it },
+            value = namaLock,
+            onValueChange = { namaLock = it },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = if (passwordVisibility) KeyboardType.Text else KeyboardType.Password,
                 imeAction = ImeAction.Next
@@ -164,7 +162,7 @@ fun SetBudgetView(
         )
 
         Text(
-            text = "Budget Wants",
+            text = "Harga Barang",
             fontSize = 16.sp,
             color = Color.Gray
         )
@@ -172,8 +170,8 @@ fun SetBudgetView(
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
 
         OutlinedTextField(
-            value = budgetwants,
-            onValueChange = { budgetwants = it },
+            value = hargaLock,
+            onValueChange = { hargaLock = it },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color.LightGray,
                 textColor = Color.DarkGray,
@@ -197,60 +195,16 @@ fun SetBudgetView(
 
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
 
-        Text(
-            text = "Budget Savings",
-            fontSize = 16.sp,
-            color = Color.Gray,
-        )
-
-        Spacer(modifier = Modifier.padding(bottom = 12.dp))
-
-        OutlinedTextField(
-            value = budgetsavings,
-            onValueChange = { budgetsavings = it },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = if (passwordVisibility) KeyboardType.Text else KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color.LightGray,
-                textColor = Color.DarkGray,
-                focusedBorderColor = Color(0XFFFAFAFA),
-                unfocusedBorderColor = Color(0XFFFAFAFA)
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-
-//                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-//                    Icon(
-//                        painter = if (passwordVisibility) painterResource(id = R.drawable.visibility) else painterResource(id = R.drawable.visibilityoff),
-//                        contentDescription = "Visibility Icon",
-//                        modifier = Modifier.height(24.dp).width(24.dp)
-//                    )
-//                }
-            }
-        )
-
-
-
-//        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-//            Icon(
-//                imageVector = if (passwordVisibility) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-//                contentDescription = "Toggle Password Visibility"
-//            )
-//        }
 
 
         Spacer(modifier = Modifier.padding(bottom = 20.dp))
 
         Button(
             onClick = {
-                   val token = "Bearer" + AuthRepository.ACCESS_TOKEN
 
 
-               mainViewModel.setBudgetSekaligus(budgetwants.toInt(),budgetneeds.toInt(),budgetsavings.toInt())
-                    navController.navigateUp()
+                mainViewModel.addWishlist(namaLock,hargaLock.toInt())
+                navController.navigateUp()
                 // Optionally navigate to the next screen or show a success message
 
 
@@ -280,8 +234,8 @@ fun SetBudgetView(
 
 
 
-        }
     }
+}
 
 
 //@Composable
