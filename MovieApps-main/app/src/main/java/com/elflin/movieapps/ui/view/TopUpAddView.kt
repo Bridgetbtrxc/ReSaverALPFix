@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,6 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,9 +75,14 @@ fun TopUpAddView(navController: NavController, authViewModel: AuthViewModel, mai
         CustomField(label = "Expense Name", value = expenseName){
             expenseName = it
         }
-        CustomField2(label = "Amount", amount = expenseAmount,){
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        CustomField(label = "Amount", value = expenseAmount,){
             expenseAmount = it
         }
+
+        Spacer(modifier = Modifier.height(5.dp))
 
         CustomDropdownMenu(mainViewModel, categories = listOf("Needs", "Wants", "Savings"), selectedCategory = selectedCategory, onCategorySelected = { category ->
             selectedCategory = category
@@ -82,6 +90,7 @@ fun TopUpAddView(navController: NavController, authViewModel: AuthViewModel, mai
             categoryId = mainViewModel.getCategoryId(category)
         })
 
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Continue",
             fontSize = 15.sp,
@@ -89,10 +98,10 @@ fun TopUpAddView(navController: NavController, authViewModel: AuthViewModel, mai
             color = Color.Black,
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
-                .padding(bottom = 1.dp)
+                .padding(bottom = 10.dp)
                 .fillMaxWidth()
                 .background(Color(0xFFD2F801), RoundedCornerShape(16.dp))
-                .padding(horizontal = 135.dp, vertical = 15.dp)
+                .padding(horizontal = 160.dp, vertical = 15.dp)
                 .clickable {
                         if (categoryId != -1) {
                             mainViewModel.AddExpense(
@@ -332,52 +341,65 @@ fun CustomDropdownMenu(
     onCategorySelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val onCategorySelectedState by rememberUpdatedState(onCategorySelected)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { expanded = !expanded }
-            .background(color = Color.White, shape = RoundedCornerShape(16.dp))
-            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
-            .padding(vertical = 3.dp)
-    ) {
-        Row(
-            modifier = Modifier
+    Column(modifier = Modifier.padding(7.dp)) {
+        Text(
+            text = "Category" ,
+            fontSize = 16.sp,
+            color = Color.White
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        var expanded by remember { mutableStateOf(false) }
+        val onCategorySelectedState by rememberUpdatedState(onCategorySelected)
+
+        Column(
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .clickable { expanded = !expanded }
+                .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+                .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                .padding(5.dp)
         ) {
-            Text(text = selectedCategory, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-        }
-
-        if (expanded) {
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    categories.forEach { category ->
-                        Text(
-                            text = category,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    expanded = false
-                                    onCategorySelectedState(category)
-                                }
-                                .padding(16.dp)
-                        )
-                        Divider(color = Color.Gray, thickness = 1.dp)
+                Text(text = selectedCategory, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+            }
+
+            if (expanded) {
+                Box(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                        .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                ) {
+                    Column {
+                        categories.forEach { category ->
+                            Text(
+                                text = category,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        expanded = false
+                                        onCategorySelectedState(category)
+                                    }
+                                    .padding(16.dp)
+                            )
+                            Divider(color = Color.Gray, thickness = 1.dp)
+                        }
                     }
                 }
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -385,37 +407,43 @@ fun CustomDropdownMenu(
 fun CustomField(
     label: String, value: String,  onValueChange: (String) -> Unit
 ) {
-
-    Column(
-        modifier = Modifier
-
-    ) {
-        TextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it) },
-            label = { Text("Expense Name") },
-            singleLine = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.Black,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = Color.Black,
-                placeholderColor = Color.Gray,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxWidth()
-                .background(color = Color.White, shape = RoundedCornerShape(16.dp))
-                .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
-                .padding(vertical = 3.dp)
-                .background(color = Color.Transparent, shape = RoundedCornerShape(4.dp))
-                .padding(horizontal = 16.dp)
+    Column(modifier = Modifier.padding(10.dp)) {
+        Text(
+            text = label ,
+            fontSize = 16.sp,
+            color = Color.White
         )
-        // You can add other UI elements here as needed
+
+        Spacer(modifier = Modifier.padding(bottom = 12.dp))
+
+        OutlinedTextField(
+
+            value = value,
+            onValueChange = { onValueChange(it) },
+
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                containerColor = Color.White,
+                textColor = Color.Black,
+                focusedBorderColor = Color(0XFFFAFAFA),
+                unfocusedBorderColor = Color(0XFFFAFAFA)
+            ),
+            placeholder = {
+                Text(
+                    text = "",
+                    color = Color.Black
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.padding(bottom = 5.dp))
     }
+
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -50,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.elflin.movieapps.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +93,7 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
             mainViewModel.savingsPercentage()
             mainViewModel.getSavingsBudgetInsight()
             mainViewModel.getWantsBudgetInsight()
-            mainViewModel.getSavingsBudgetInsight()
+            mainViewModel.getNeedsBudgetInsight()
         }
 
         Column(
@@ -156,7 +157,7 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
                 onClick = { },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp),
+                    .height(280.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF5A45FE)
                 ),
@@ -236,14 +237,6 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
                             fontSize = 12.sp
                         )
 
-                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
-                        Text(
-                            text = "Savings",
-                            color = Color.LightGray,
-                            fontSize = 12.sp
-                        )
-
                     }
 
                     Image(
@@ -314,7 +307,7 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
 
                     }
 
-                    Spacer(modifier = Modifier.padding(end = 80.dp))
+                    Spacer(modifier = Modifier.padding(end = 60.dp))
 
 
                     Text(
@@ -374,7 +367,7 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
 
                     }
 
-                    Spacer(modifier = Modifier.padding(end = 80.dp))
+                    Spacer(modifier = Modifier.padding(end = 60.dp))
 
 
                     Text(
@@ -433,7 +426,7 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
 
                     }
 
-                    Spacer(modifier = Modifier.padding(end = 80.dp))
+                    Spacer(modifier = Modifier.padding(end = 60.dp))
 
                     Text(
                         text = savingPercentage.value + "%",
@@ -685,9 +678,12 @@ fun InsightView(navController: NavController, mainViewModel: MainViewModel) {
 
     }}
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun InsightPreview() {
-//
-//    return InsightView(navController)
-//}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun InsightPreview() {
+    val navController = rememberNavController()
+    val mainViewModel : MainViewModel?= null
+    if (mainViewModel != null) {
+        InsightView(navController, mainViewModel)
+    }
+}

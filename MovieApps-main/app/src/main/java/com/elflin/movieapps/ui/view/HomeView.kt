@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +63,7 @@ fun HomeView(
     mainViewModel: MainViewModel
 ) {
 
-
+    val totalSpendingState = mainViewModel.totalSpending.observeAsState("")
 
     val budgetChecker by mainViewModel.budgetChecker.observeAsState()
     val expenses by mainViewModel.expenses.observeAsState(initial = emptyList())
@@ -100,7 +101,7 @@ fun HomeView(
         Box(modifier = Modifier.padding(paddingValues)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
-                    Menu1(navController, authViewModel)
+                    Menu1(navController, authViewModel,totalSpendingState)
                 }
 
                 items(expenses) { expense ->
@@ -123,7 +124,10 @@ fun HomeView(
 }
 
 @Composable
-fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
+fun Menu1(
+    navController: NavController, authViewModel: AuthViewModel,
+    totalSpendingState: State<String>
+) {
     val userName by authViewModel.userName.observeAsState("")
 
     Column(
@@ -185,7 +189,7 @@ fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
                     .padding(start = 7.dp)
             ) {
                 Text(
-                    text = "Total Budget This Month",
+                    text = "Total Spending This Month",
                     fontSize = 14.sp
                 )
                 Image(
@@ -204,7 +208,7 @@ fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
                 )
             }
             Text(
-                text = "Rp 1.000.000",
+                text = "Rp "+ totalSpendingState.value,
                 fontSize = 38.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -225,13 +229,6 @@ fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
                         .padding(bottom = 4.dp)
                         .weight(1f)
                 )
-
-                Text(
-                    text = "See Specific Time",
-                    color = Color.Blue,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                )
             }
             Row(
                 modifier = Modifier
@@ -242,10 +239,10 @@ fun Menu1(navController: NavController, authViewModel: AuthViewModel) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                ClickableRow1(onDeleteClicked = {})
+//                ClickableRow1(onDeleteClicked = {})
                 Spacer(modifier = Modifier.width(8.dp))
 
-                ClickableRow2(navController)
+//                ClickableRow2(navController)
             }
         }
     }

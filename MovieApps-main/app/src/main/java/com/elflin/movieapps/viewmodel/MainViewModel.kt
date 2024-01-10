@@ -16,6 +16,8 @@ import com.elflin.movieapps.model.TotalExpenses
 import com.elflin.movieapps.model.Wishlist
 import com.elflin.movieapps.model.WishlistList
 import com.elflin.movieapps.model.budgetResponse
+import com.elflin.movieapps.model.budgetResponse2
+import com.elflin.movieapps.model.budgetResponse3
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -128,17 +130,18 @@ class MainViewModel @Inject constructor(
     }
 
     fun getWantsBudgetInsight() {
+        val token = "Bearer " + _tokenLiveData.value
         Log.d("BudgetInsight", "Fetching wants budget insight...")
         _isLoading.value = true
         viewModelScope.launch {
-            val token = "Bearer " + _tokenLiveData
+
             try {
                 val response = mainRepository.getWantsBudgetInsight(token)
                 Log.d("BudgetInsight", "Response received for wants budget insight: ${response.code()}")
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = Gson().fromJson(response.body(), budgetResponse::class.java)
-                    _wantsRemainingMessage.value = responseBody.remaining_message
-                    _wantsPercentageMessage.value = responseBody.percentage_message
+                    _wantsRemainingMessage.value = responseBody.remaining_message.toString()
+                    _wantsPercentageMessage.value = responseBody.percentage_message.toString()
                     Log.d("BudgetInsight", "Wants Budget Insight updated successfully.")
                 } else {
                     _responseMessage.value = "Failed to get wants budget insight"
@@ -155,17 +158,18 @@ class MainViewModel @Inject constructor(
 
 
     fun getSavingsBudgetInsight() {
+        val token = "Bearer " + _tokenLiveData.value
         Log.d("BudgetInsight", "Fetching savings budget insight...")
         _isLoading.value = true
         viewModelScope.launch {
-            val token = "Bearer " + _tokenLiveData.value
+
             try {
                 val response = mainRepository.getSavingsBudgetInsight(token)
                 Log.d("BudgetInsight", "Response received for savings budget insight: ${response.code()}")
                 if (response.isSuccessful && response.body() != null) {
-                    val responseBody = Gson().fromJson(response.body(), budgetResponse::class.java)
-                    _savingsRemainingMessage.value = responseBody.remaining_message
-                    _savingsPercentageMessage.value = responseBody.percentage_message
+                    val responseBody = Gson().fromJson(response.body(), budgetResponse2::class.java)
+                    _savingsRemainingMessage.value = responseBody.remaining_message.toString()
+                    _savingsPercentageMessage.value = responseBody.percentage_message.toString()
                     Log.d("BudgetInsight", "Savings Budget Insight updated successfully.")
                 } else {
                     _responseMessage.value = "Failed to get savings budget insight"
@@ -183,21 +187,22 @@ class MainViewModel @Inject constructor(
 
 
     fun getNeedsBudgetInsight() {
-        Log.d("BudgetInsight", "Fetching needs budget insight...")
+        val token = "Bearer " + _tokenLiveData.value
+        Log.d("BudgetInsight1", "Fetching needs budget insight...")
         _isLoading.value = true
         viewModelScope.launch {
-            val token = "Bearer " + _tokenLiveData.value
+
             try {
                 val response = mainRepository.getNeedsBudgetInsight(token)
-                Log.d("BudgetInsight", "Response received for needs budget insight: ${response.code()}")
+                Log.d("BudgetInsight11", "Response received for needs budget insight: ${response.code()}")
                 if (response.isSuccessful && response.body() != null) {
-                    val responseBody = Gson().fromJson(response.body(), budgetResponse::class.java)
-                    _needsRemainingMessage.value = responseBody.remaining_message
-                    _needsPercentageMessage.value = responseBody.percentage_message
-                    Log.d("BudgetInsight", "Needs Budget Insight updated successfully.")
+                    val responseBody = Gson().fromJson(response.body(), budgetResponse3::class.java)
+                    _needsRemainingMessage.value = responseBody.remaining_message.toString()
+                    _needsPercentageMessage.value = responseBody.percentage_message.toString()
+                    Log.d("BudgetInsight1", "Needs Budget Insight updated successfully.")
                 } else {
                     _responseMessage.value = "Failed to get needs budget insight"
-                    Log.d("BudgetInsight", "Failed to get needs budget insight: ${response.errorBody()?.string()}")
+                    Log.d("BudgetInsight1", "Failed to get needs budget insight: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 _responseMessage.value = "Error: ${e.message}"
